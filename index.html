@@ -1,6 +1,105 @@
 <!DOCTYPE html>
-   <html>
-      <body>
-          <h1>Fatih Ahmet Tuğtağ</h1>
-      </body>
-   </html> 
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>D'Hondt Yöntemi İle Milletvekili Hesaplama</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>D'Hondt Yöntemi İle Milletvekili Hesaplama</h1>
+
+    <label for="partiSayisi">Parti sayısı:</label>
+    <input type="number" id="partiSayisi" name="partiSayisi" value="3">
+    <br>
+    <label for="milletvekiliSayisi">Milletvekili sayısı:</label>
+    <input type="number" id="milletvekiliSayisi" name="milletvekiliSayisi" value="10">
+    <br>
+    <button onclick="partiOylariniGir()">Parti Oy Sayıları</button>
+    <br>
+
+    <div id="partiOyGirisi"></div>
+    <br>
+
+    <button onclick="hesapla()">Hesapla</button>
+
+    <table id="sonuc">
+        <thead>
+            <tr>
+                <th>Parti</th>
+                <th>Milletvekili Sayısı</th>
+            </tr>
+        </thead>
+        <tbody id="sonucGovde">
+        </tbody>
+    </table>
+
+    <script>
+        function partiOylariniGir() {
+            const partiSayisi = document.getElementById("partiSayisi").value;
+            let partiOyGirisi = document.getElementById("partiOyGirisi");
+            partiOyGirisi.innerHTML = "";
+
+            for (let i = 0; i < partiSayisi; i++) {
+                const label = document.createElement("label");
+                label.textContent = `Parti ${i + 1} Oy Sayısı: `;
+                partiOyGirisi.appendChild(label);
+
+                const input = document.createElement("input");
+                input.type = "number";
+                input.id = `partiOy_${i}`;
+                partiOyGirisi.appendChild(input);
+                partiOyGirisi.appendChild(document.createElement("br"));
+            }
+        }
+
+        partiOylariniGir(); // Sayfa yüklendiğinde parti oy giriş alanlarını oluştur.
+
+        function hesapla() {
+            const partiSayisi = document.getElementById("partiSayisi").value;
+            const milletvekiliSayisi = document.getElementById("milletvekiliSayisi").value;
+            let oylar = [];
+
+            for (let i = 0; i < partiSayisi; i++) {
+                const oy = document.getElementById(`partiOy_${i}`).value;
+                oylar.push({ parti: i + 1, oy: parseInt(oy), milletvekili: 0 });
+            }
+
+            for (let j = 0; j < milletvekiliSayisi; j++) {
+                let maxOyIndex = 0;
+                for (let i = 1; i < oylar.length; i++) {
+                    if ((oylar[i].oy / (oylar[i].milletvekili + 1)) > (oylar[maxOyIndex].oy / (oylar[maxOyIndex].milletvekili + 1))) {
+                        maxOyIndex = i;
+                    }
+                }
+                oylar[maxOyIndex].milletvekili += 1;
+            }
+
+            let sonucGovde = document.getElementById("sonucGovde");
+            sonucGovde.innerHTML = "";
+
+            for (let i = 0; i < oylar.length; i++) {
+                const tr = document.createElement("tr");
+
+                const tdParti = document.createElement("td");
+                tdParti.textContent = `Parti ${oylar[i].parti}`;
+                tr.appendChild(tdParti);
+
+                const tdMilletvekili = document.createElement("td");
+                tdMilletvekili.textContent = oylar[i].milletvekili;
+                tr.appendChild(tdMilletvekili);
+
+                sonucGovde.appendChild(tr);
+            }
+        }
+    </script>
+</body>
+</html>
